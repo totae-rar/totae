@@ -1,4 +1,4 @@
--- Services
+
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UIS = game:GetService("UserInputService")
@@ -6,13 +6,13 @@ local UIS = game:GetService("UserInputService")
 local LP = Players.LocalPlayer
 local Cam = workspace.CurrentCamera
 
--- ESP settings (modifiable by GUI)
+
 local ESP_RADIUS = 250
 local ESP_COLOR = Color3.fromRGB(255, 0, 0)
 local ESP_ENABLED = true
 
-local AIMBOT_ENABLED = false           -- Overall aimbot feature toggle (GUI switch)
-local AIMBOT_TOGGLE_ACTIVE = false    -- Actual aiming active state toggled by J key
+local AIMBOT_ENABLED = false
+local AIMBOT_TOGGLE_ACTIVE = false
 local AIMBOT_TARGET = nil
 local AIMBOT_SMOOTHNESS = 0.15 -- smaller = faster snap, bigger = slower smooth
 
@@ -20,7 +20,7 @@ local esp = {}
 local UPDATE_RATE = 0.1
 local timer = 0
 
--- ===== ESP LOGIC =====
+
 
 local function newESP(char)
     local h = Instance.new("Highlight")
@@ -37,19 +37,16 @@ RunService.RenderStepped:Connect(function(dt)
     timer += dt
     if timer < UPDATE_RATE then return end
     timer = 0
-
     if ESP_ENABLED then
         for _, p in Players:GetPlayers() do
             if p == LP then continue end
             local c = p.Character
             local hum = c and c:FindFirstChildOfClass("Humanoid")
             local root = c and c:FindFirstChild("HumanoidRootPart")
-
             if not (c and hum and root and hum.Health > 0) then
                 if esp[c] then esp[c]:Destroy(); esp[c] = nil end
                 continue
             end
-
             local d = (Cam.CFrame.Position - root.Position).Magnitude
             if d <= ESP_RADIUS then
                 if not esp[c] then
@@ -70,13 +67,12 @@ RunService.RenderStepped:Connect(function(dt)
     end
 end)
 
--- ===== AIMBOT LOGIC =====
+
 
 local function getNearestHead()
     local nearestDist = math.huge
     local nearestHead = nil
     local camPos = Cam.CFrame.Position
-
     for _, p in Players:GetPlayers() do
         if p == LP then continue end
         local c = p.Character
@@ -92,7 +88,6 @@ local function getNearestHead()
             end
         end
     end
-
     return nearestHead
 end
 
@@ -102,25 +97,16 @@ end
 
 RunService.RenderStepped:Connect(function()
     if AIMBOT_ENABLED and AIMBOT_TOGGLE_ACTIVE then
-        -- Find closest target every frame (so it switches automatically)
         AIMBOT_TARGET = getNearestHead()
-
         if AIMBOT_TARGET then
             local camPos = Cam.CFrame.Position
             local targetPos = AIMBOT_TARGET.Position
-
             local direction = (targetPos - camPos).Unit
             local currentLook = Cam.CFrame.LookVector
-
-            -- Smoothly lerp from current look vector toward target direction
             local newLook = currentLook:Lerp(direction, AIMBOT_SMOOTHNESS)
-
-            -- Rebuild the camera CFrame with same position and new look vector
-            Cam.CFrame = CFrame.new(camPos, camPos + newLook)
+         Cam.CFrame = CFrame.new(camPos, camPos + newLook)
         end
-        -- If no target, do nothing and camera stays free
     else
-        -- Not aiming, clear target ref
         AIMBOT_TARGET = nil
     end
 end)
@@ -136,7 +122,7 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
--- ===== GUI =====
+
 
 local playerGui = LP:WaitForChild("PlayerGui")
 local gui = playerGui:FindFirstChild("ESP_GUI")
@@ -148,7 +134,7 @@ if not gui then
     gui.Parent = playerGui
 end
 
--- Clear old UI if it exists to prevent duplicates on script re-run
+
 for _, child in ipairs(gui:GetChildren()) do
     child:Destroy()
 end
@@ -163,7 +149,7 @@ frame.ClipsDescendants = true
 Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 16)
 Instance.new("UIStroke", frame).Thickness = 2
 
--- Title
+
 local title = Instance.new("TextLabel", frame)
 title.Size = UDim2.fromScale(1, 0.15)
 title.BackgroundTransparency = 1
@@ -172,7 +158,6 @@ title.TextColor3 = Color3.new(1,1,1)
 title.Font = Enum.Font.GothamBold
 title.TextScaled = true
 
--- ScrollingFrame to hold controls
 local scrollFrame = Instance.new("ScrollingFrame", frame)
 scrollFrame.Size = UDim2.fromScale(1, 0.7)
 scrollFrame.Position = UDim2.fromScale(0, 0.18)
@@ -185,12 +170,11 @@ local grid = Instance.new("UIGridLayout", scrollFrame)
 grid.CellSize = UDim2.new(1, -20, 0, 50)
 grid.CellPadding = UDim2.new(0, 0, 0, 10)
 
--- Switch creation function
+
 local function createSwitch(name, initialState, parent)
     local container = Instance.new("Frame", parent)
     container.Size = UDim2.new(1, 0, 0, 50)
     container.BackgroundTransparency = 1
-
     local label = Instance.new("TextLabel", container)
     label.Text = name
     label.Size = UDim2.new(0.7, 0, 1, 0)
@@ -200,7 +184,6 @@ local function createSwitch(name, initialState, parent)
     label.TextScaled = true
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.Position = UDim2.new(0.03, 0, 0, 0)
-
     local button = Instance.new("TextButton", container)
     button.Size = UDim2.new(0.25, 0, 0.6, 0)
     button.Position = UDim2.new(0.72, 0, 0.2, 0)
@@ -210,7 +193,6 @@ local function createSwitch(name, initialState, parent)
     button.TextScaled = true
     button.TextColor3 = Color3.new(1,1,1)
     Instance.new("UICorner", button)
-
     button.MouseButton1Click:Connect(function()
         local newState = not (button.Text == "ON")
         button.Text = newState and "ON" or "OFF"
@@ -225,14 +207,13 @@ local function createSwitch(name, initialState, parent)
             end
         end
     end)
-
     return container
 end
 
 local espSwitch = createSwitch("ESP", ESP_ENABLED, scrollFrame)
 local aimbotSwitch = createSwitch("Aimbot (J)", AIMBOT_ENABLED, scrollFrame)
 
--- Radius box
+
 local radiusBox = Instance.new("TextBox", scrollFrame)
 radiusBox.Size = UDim2.new(1, 0, 0, 50)
 radiusBox.Text = tostring(ESP_RADIUS)
@@ -253,7 +234,7 @@ radiusBox.FocusLost:Connect(function()
     end
 end)
 
--- Color buttons container inside scroll frame
+
 local colorContainer = Instance.new("Frame", scrollFrame)
 colorContainer.Size = UDim2.new(1, 0, 0, 50)
 colorContainer.BackgroundTransparency = 1
@@ -279,7 +260,6 @@ for name, col in pairs(colors) do
     btn.BackgroundColor3 = col
     btn.TextColor3 = Color3.new(1,1,1)
     Instance.new("UICorner", btn)
-
     btn.MouseButton1Click:Connect(function()
         ESP_COLOR = col
         for _, h in pairs(esp) do
@@ -288,7 +268,7 @@ for name, col in pairs(colors) do
     end)
 end
 
--- Adjust CanvasSize when content changes
+
 local function updateCanvasSize()
     local layout = scrollFrame:FindFirstChildOfClass("UIGridLayout")
     if layout then
