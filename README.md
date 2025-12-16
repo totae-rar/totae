@@ -167,10 +167,10 @@ Instance.new("UIStroke", frame).Thickness = 2
 local title = Instance.new("TextLabel", frame)
 title.Size = UDim2.fromScale(1, 0.15)
 title.BackgroundTransparency = 1
-title.Text = "ToTAElly safe GUI"  -- <-- updated title here
+title.Text = "ToTAElly safe GUI"
 title.TextColor3 = Color3.new(1,1,1)
 title.Font = Enum.Font.GothamBold
-title.TextScaled = true-- Title
+title.TextScaled = true
 
 -- ScrollingFrame to hold controls
 local scrollFrame = Instance.new("ScrollingFrame", frame)
@@ -217,7 +217,7 @@ local function createSwitch(name, initialState, parent)
         button.BackgroundColor3 = newState and Color3.fromRGB(0, 170, 0) or Color3.fromRGB(170, 0, 0)
         if name == "ESP" then
             ESP_ENABLED = newState
-        elseif name == "Aimbot" then
+        elseif name == "Aimbot (J)" then
             AIMBOT_ENABLED = newState
             if not AIMBOT_ENABLED then
                 AIMBOT_TOGGLE_ACTIVE = false
@@ -230,7 +230,7 @@ local function createSwitch(name, initialState, parent)
 end
 
 local espSwitch = createSwitch("ESP", ESP_ENABLED, scrollFrame)
-local aimbotSwitch = createSwitch("Aimbot", AIMBOT_ENABLED, scrollFrame)
+local aimbotSwitch = createSwitch("Aimbot (J)", AIMBOT_ENABLED, scrollFrame)
 
 -- Radius box
 local radiusBox = Instance.new("TextBox", scrollFrame)
